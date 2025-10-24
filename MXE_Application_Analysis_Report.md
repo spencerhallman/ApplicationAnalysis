@@ -173,138 +173,181 @@ MXE SYSTEM ARCHITECTURE:
 
 ### External Dependencies
 
+**Overview:** The MXE system has a hierarchical dependency structure with four main categories. Each category is critical to system operation, with dependencies flowing from core system services through storage management, security integration, and task management layers.
+
+#### 1. Core System Services (Critical Path)
+
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor': '#e3f2fd', 'primaryTextColor': '#000', 'primaryBorderColor': '#1565c0', 'lineColor': '#333', 'nodeSpacing': 150, 'rankSpacing': 200 }}}%%
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor': '#ffebee', 'primaryTextColor': '#000', 'primaryBorderColor': '#c62828', 'lineColor': '#333', 'nodeSpacing': 200, 'rankSpacing': 300 }}}%%
 graph TB
-    subgraph ZOS["🖥️ IBM z/OS MAINFRAME PLATFORM"]
+    subgraph CORE["🔴 CRITICAL PATH - Core System Services"]
         direction TB
         
-        %% SYSTEM CORE SERVICES - LEVEL 1
-        subgraph CORE["📊 SYSTEM CORE SERVICES"]
-            CVT["🏛️ CVT<br/>CONTROL VECTOR TABLE<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Fixed Address: 0x10<br/>🔍 System Parameters<br/>⚠️ CRITICAL DEPENDENCY"]
-            
-            PSA["💾 PSA<br/>PREFIXED SAVE AREA<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Low Storage: 0x0-0xFFF<br/>🔍 Hardware Interface<br/>⚠️ HIGH DEPENDENCY"]
-            
-            ASVT["🌐 ASVT<br/>ADDRESS SPACE VECTOR<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Common Storage<br/>🔍 AS Inventory Control<br/>⚠️ HIGH DEPENDENCY"]
-            
-            ASCB["🎯 ASCB<br/>ADDRESS SPACE CONTROL<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Per Address Space<br/>🔍 AS Attributes & Security<br/>⚠️ HIGH DEPENDENCY"]
-        end
+        CVT["🏛️ CVT<br/>Control Vector Table<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Fixed Address: 0x10<br/>🔍 System Parameters & Constants<br/>⚠️ CRITICAL - System Anchor Point"]
         
-        %% SECURITY SERVICES - LEVEL 2  
-        subgraph SECURITY["🔐 SECURITY FRAMEWORK"]
-            SAF["🛡️ SAF<br/>SECURITY AUTH FACILITY<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Router<br/>🔍 Security Request Routing<br/>⚠️ CRITICAL DEPENDENCY"]
-            
-            RACF["🗝️ RACF<br/>RESOURCE ACCESS CONTROL<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Security Product<br/>🔍 Access Control Manager<br/>⚠️ CRITICAL DEPENDENCY"]
-            
-            ACEE["👤 ACEE<br/>ACCESS CONTROL ENV<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Task Memory<br/>🔍 User Security Context<br/>⚠️ HIGH DEPENDENCY"]
-        end
+        PSA["💾 PSA<br/>Prefixed Save Area<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Low Storage: 0x0-0xFFF<br/>🔍 Hardware Interface Layer<br/>⚠️ HIGH - Hardware Abstraction"]
         
-        %% STORAGE SERVICES - LEVEL 3
-        subgraph STORAGE["💾 STORAGE MANAGEMENT"]
-            CSA["🏢 CSA<br/>COMMON STORAGE AREA<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Below 16MB Line<br/>🔍 Shared Control Blocks<br/>⚠️ HIGH DEPENDENCY"]
-            
-            ECSA["🏗️ ECSA<br/>EXTENDED COMMON STORAGE<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Above 16MB Line<br/>🔍 Large Control Blocks<br/>⚠️ MEDIUM DEPENDENCY"]
-            
-            LPA["📚 LPA<br/>LINK PACK AREA<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Shared Module Area<br/>🔍 Executable Modules<br/>⚠️ MEDIUM DEPENDENCY"]
-        end
+        ASVT["🌐 ASVT<br/>Address Space Vector Table<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Common Storage<br/>🔍 Address Space Inventory<br/>⚠️ HIGH - AS Management"]
         
-        %% CROSS-MEMORY SERVICES - LEVEL 4
-        subgraph XMEM["🔄 CROSS-MEMORY SERVICES"]
-            PC["🌉 PC<br/>PROGRAM CALL SERVICES<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Nucleus<br/>🔍 Cross-Memory Bridge<br/>⚠️ CRITICAL DEPENDENCY"]
-            
-            SRB["⚡ SRB<br/>SERVICE REQUEST BLOCK<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Requestor Storage<br/>🔍 Async Work Scheduler<br/>⚠️ HIGH DEPENDENCY"]
-            
-            LXRES["🔗 LXRES<br/>LINKAGE INDEX SERVICES<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Nucleus<br/>🔍 LX Management<br/>⚠️ HIGH DEPENDENCY"]
-            
-            ETCRE["📋 ETCRE<br/>ENTRY TABLE CREATE<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Nucleus<br/>🔍 Entry Point Manager<br/>⚠️ HIGH DEPENDENCY"]
-        end
-        
-        %% TASK MANAGEMENT - LEVEL 5
-        subgraph TASK["⚙️ TASK & RESOURCE MANAGEMENT"]
-            ATTACH["🚀 ATTACH<br/>SUBTASK CREATION<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Macro Library<br/>🔍 Task Management<br/>⚠️ MEDIUM DEPENDENCY"]
-            
-            RESMGR["🧹 RESMGR<br/>RESOURCE MANAGER<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Nucleus<br/>🔍 Lifecycle Management<br/>⚠️ HIGH DEPENDENCY"]
-            
-            EXTRACT["🔍 EXTRACT<br/>SYSTEM INFORMATION<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Macro Library<br/>🔍 Data Retrieval<br/>⚠️ LOW DEPENDENCY"]
-            
-            QEDIT["📊 QEDIT<br/>QUEUE EDIT SERVICES<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Nucleus<br/>🔍 Queue Management<br/>⚠️ MEDIUM DEPENDENCY"]
-        end
+        ASCB["🎯 ASCB<br/>Address Space Control Block<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Per Address Space<br/>🔍 AS Attributes & Security<br/>⚠️ HIGH - Security Boundaries"]
     end
     
-    %% MXE APPLICATION LAYER
-    subgraph MXE["🎯 MXE APPLICATION COMPONENTS"]
+    %% Core dependencies
+    CVT -->|"System Anchor"| PSA
+    CVT -->|"AS Inventory"| ASVT
+    ASVT -->|"AS Control"| ASCB
+    
+    %% Styling
+    classDef critical fill:#ffebee,stroke:#c62828,stroke-width:6px,color:#000,font-size:24px,font-weight:bold
+    class CVT,PSA,ASVT,ASCB critical
+```
+
+#### 2. Cross-Memory Services (Critical Path)
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor': '#ffebee', 'primaryTextColor': '#000', 'primaryBorderColor': '#c62828', 'lineColor': '#333', 'nodeSpacing': 200, 'rankSpacing': 300 }}}%%
+graph TB
+    subgraph XMEM["🔴 CRITICAL PATH - Cross-Memory Services"]
         direction TB
         
-        MAIN["🏛️ MXESRVMN<br/>MAIN SERVER TASK<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📍 MXE Address Space<br/>🔍 Server Orchestration Hub<br/>💡 Coordination & Control<br/>⚠️ CRITICAL COMPONENT"]
+        PC["🌉 PC<br/>Program Call Services<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Nucleus<br/>🔍 Cross-Memory Bridge<br/>⚠️ CRITICAL - Client Interface"]
         
-        PCINTF["🌐 MXESRVPC<br/>PC ROUTINE INTERFACE<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📍 LPA Cross-Memory<br/>🔍 Client Service Gateway<br/>💡 Primary Interface<br/>⚠️ CRITICAL COMPONENT"]
+        SRB["⚡ SRB<br/>Service Request Block<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Requestor Storage<br/>🔍 Async Work Scheduler<br/>⚠️ HIGH - Async Processing"]
         
-        SRBPROC["⚡ MXESRBRQ<br/>SRB REQUEST HANDLER<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📍 Target Address Space<br/>🔍 Async Processing Engine<br/>💡 Data Collection<br/>⚠️ HIGH COMPONENT"]
+        LXRES["🔗 LXRES<br/>Linkage Index Services<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Nucleus<br/>🔍 LX Management<br/>⚠️ HIGH - Service Registration"]
         
-        LOGPROC["📝 MXESRVLD<br/>LOG DATA PROCESSOR<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📍 MXE Server Subtask<br/>🔍 Data Persistence Engine<br/>💡 Queue Processing<br/>⚠️ MEDIUM COMPONENT"]
-        
-        RESMGMT["🧹 MXESRVRM<br/>RESOURCE MANAGER<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📍 MXE Server Context<br/>🔍 Cleanup Coordinator<br/>💡 Lifecycle Management<br/>⚠️ HIGH COMPONENT"]
-        
-        TIMER["⏰ MXETMRXR<br/>TIMER EXIT ROUTINE<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📍 Timer Exit Context<br/>🔍 Time-Based Processor<br/>💡 Event Coordination<br/>⚠️ MEDIUM COMPONENT"]
+        ETCRE["📋 ETCRE<br/>Entry Table Create<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Nucleus<br/>🔍 Entry Point Manager<br/>⚠️ HIGH - Interface Setup"]
     end
     
-    %% CRITICAL DEPENDENCIES - THICK LINES
-    MAIN ==>|"🏛️ SYSTEM ANCHOR<br/>System Parameters"| CVT
-    MAIN ==>|"💾 HARDWARE ACCESS<br/>Low Storage Interface"| PSA
-    MAIN ==>|"🌐 ADDRESS SPACES<br/>AS Discovery & Validation"| ASVT
-    MAIN ==>|"🎯 AS CONTROL<br/>Security Boundaries"| ASCB
-    MAIN ==>|"🏢 SHARED STORAGE<br/>Global Control Blocks"| CSA
+    %% Cross-memory dependencies
+    PC -->|"Work Dispatch"| SRB
+    PC -->|"Service Setup"| LXRES
+    LXRES -->|"Entry Points"| ETCRE
     
-    %% HIGH DEPENDENCIES - MEDIUM LINES
-    MAIN -->|"🏗️ EXTENDED STORAGE<br/>Large Structures"| ECSA
-    MAIN -->|"📚 MODULE LOADING<br/>LPA Components"| LPA
-    MAIN -->|"🚀 TASK CREATION<br/>Subtask Management"| ATTACH
-    MAIN -->|"🧹 RESOURCE CLEANUP<br/>Lifecycle Management"| RESMGR
+    %% Styling
+    classDef critical fill:#ffebee,stroke:#c62828,stroke-width:6px,color:#000,font-size:24px,font-weight:bold
+    class PC,SRB,LXRES,ETCRE critical
+```
+
+#### 3. Storage Management (High Impact)
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor': '#fff3e0', 'primaryTextColor': '#000', 'primaryBorderColor': '#ef6c00', 'lineColor': '#333', 'nodeSpacing': 200, 'rankSpacing': 300 }}}%%
+graph TB
+    subgraph STORAGE["🟡 HIGH IMPACT - Storage Management"]
+        direction TB
+        
+        CSA["🏢 CSA<br/>Common Storage Area<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Below 16MB Line<br/>🔍 Shared Control Blocks<br/>⚠️ HIGH - Global State"]
+        
+        ECSA["🏗️ ECSA<br/>Extended Common Storage<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Above 16MB Line<br/>🔍 Large Control Blocks<br/>⚠️ MEDIUM - Extended Addressing"]
+        
+        LPA["📚 LPA<br/>Link Pack Area<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Shared Module Area<br/>🔍 Executable Modules<br/>⚠️ MEDIUM - Module Sharing"]
+        
+        BUFFER["💾 Buffer Pools<br/>Dynamic Memory<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Runtime Allocation<br/>🔍 Cell Management<br/>⚠️ MEDIUM - Memory Efficiency"]
+    end
     
-    %% PC INTERFACE SECURITY DEPENDENCIES
-    PCINTF ==>|"🛡️ SECURITY FRAMEWORK<br/>Authorization Router"| SAF
-    PCINTF ==>|"🗝️ ACCESS CONTROL<br/>Permission Validation"| RACF
-    PCINTF ==>|"👤 USER CONTEXT<br/>Identity Verification"| ACEE
-    PCINTF ==>|"🌉 CROSS-MEMORY<br/>Bridge Services"| PC
+    %% Storage dependencies
+    CSA -->|"Extended Storage"| ECSA
+    CSA -->|"Module Loading"| LPA
+    CSA -->|"Memory Allocation"| BUFFER
     
-    %% PC INTERFACE CROSS-MEMORY DEPENDENCIES
-    PCINTF -->|"⚡ ASYNC PROCESSING<br/>Work Dispatch"| SRB
-    PCINTF -->|"🔗 LINKAGE INDEX<br/>Service Registration"| LXRES
-    PCINTF -->|"📋 ENTRY TABLES<br/>Endpoint Management"| ETCRE
+    %% Styling
+    classDef highImpact fill:#fff3e0,stroke:#ef6c00,stroke-width:6px,color:#000,font-size:24px,font-weight:bold
+    class CSA,ECSA,LPA,BUFFER highImpact
+```
+
+#### 4. Security Integration (Medium Impact)
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor': '#e3f2fd', 'primaryTextColor': '#000', 'primaryBorderColor': '#1565c0', 'lineColor': '#333', 'nodeSpacing': 200, 'rankSpacing': 300 }}}%%
+graph TB
+    subgraph SECURITY["🔵 MEDIUM IMPACT - Security Integration"]
+        direction TB
+        
+        SAF["🛡️ SAF<br/>Security Authorization Facility<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Router<br/>🔍 Security Request Routing<br/>⚠️ CRITICAL - Authorization Router"]
+        
+        RACF["🗝️ RACF<br/>Resource Access Control<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Security Product<br/>🔍 Access Control Manager<br/>⚠️ CRITICAL - Permission Validation"]
+        
+        ACEE["👤 ACEE<br/>Access Control Environment<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Task Memory<br/>🔍 User Security Context<br/>⚠️ HIGH - Identity Management"]
+    end
     
-    %% SRB PROCESSOR DEPENDENCIES
-    SRBPROC -->|"🎯 TARGET VALIDATION<br/>AS Authorization"| ASCB
-    SRBPROC -->|"🏢 DATA ACCESS<br/>Shared Coordination"| CSA
-    SRBPROC -->|"📊 RESULT QUEUING<br/>Response Handling"| QEDIT
+    %% Security dependencies
+    SAF -->|"Authorization"| RACF
+    SAF -->|"User Context"| ACEE
     
-    %% LOG PROCESSOR DEPENDENCIES
-    LOGPROC -->|"📊 QUEUE PROCESSING<br/>Data Flow Coordination"| QEDIT
-    LOGPROC -->|"🏢 BUFFER MANAGEMENT<br/>Memory Coordination"| CSA
+    %% Styling
+    classDef security fill:#e3f2fd,stroke:#1565c0,stroke-width:6px,color:#000,font-size:24px,font-weight:bold
+    class SAF,RACF,ACEE security
+```
+
+#### 5. Task Management (Medium Impact)
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor': '#e8f5e8', 'primaryTextColor': '#000', 'primaryBorderColor': '#2e7d32', 'lineColor': '#333', 'nodeSpacing': 200, 'rankSpacing': 300 }}}%%
+graph TB
+    subgraph TASK["🟢 MEDIUM IMPACT - Task Management"]
+        direction TB
+        
+        ATTACH["🚀 ATTACH<br/>Subtask Creation<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Macro Library<br/>🔍 Task Management<br/>⚠️ MEDIUM - Parallel Processing"]
+        
+        RESMGR["🧹 RESMGR<br/>Resource Manager<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Nucleus<br/>🔍 Lifecycle Management<br/>⚠️ HIGH - Resource Cleanup"]
+        
+        EXTRACT["🔍 EXTRACT<br/>System Information<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 Macro Library<br/>🔍 Data Retrieval<br/>⚠️ LOW - System Monitoring"]
+        
+        QEDIT["📊 QEDIT<br/>Queue Edit Services<br/>━━━━━━━━━━━━━━━━━━━<br/>📍 System Nucleus<br/>🔍 Queue Management<br/>⚠️ MEDIUM - Data Coordination"]
+    end
     
-    %% RESOURCE MANAGER DEPENDENCIES
-    RESMGMT -->|"🧹 CLEANUP COORDINATION<br/>Resource Protection"| RESMGR
-    RESMGMT -->|"🏢 SHARED RESOURCES<br/>Tracking & Management"| CSA
+    %% Task dependencies
+    ATTACH -->|"Resource Tracking"| RESMGR
+    EXTRACT -->|"Data Processing"| QEDIT
     
-    %% TIMER HANDLER DEPENDENCIES
-    TIMER -->|"⏰ SYSTEM MONITORING<br/>Operational Data"| EXTRACT
-    TIMER -->|"📊 EVENT QUEUING<br/>Timer Coordination"| QEDIT
-    
-    %% ENHANCED LARGE-SCALE STYLING FOR MAXIMUM READABILITY
-    classDef systemServices fill:#e3f2fd,stroke:#1565c0,stroke-width:8px,color:#000,font-size:36px,font-weight:bold
-    classDef securityServices fill:#fff3e0,stroke:#ef6c00,stroke-width:8px,color:#000,font-size:36px,font-weight:bold
-    classDef storageServices fill:#f3e5f5,stroke:#7b1fa2,stroke-width:8px,color:#000,font-size:36px,font-weight:bold
-    classDef crossMemory fill:#ffebee,stroke:#c62828,stroke-width:8px,color:#000,font-size:36px,font-weight:bold
-    classDef taskMgmt fill:#e8f5e8,stroke:#2e7d32,stroke-width:8px,color:#000,font-size:36px,font-weight:bold
-    classDef mxeComponents fill:#fff8e1,stroke:#f57f17,stroke-width:10px,color:#000,font-size:40px,font-weight:bold
-    
-    %% APPLY STYLING CLASSES
-    class CVT,PSA,ASVT,ASCB systemServices
-    class SAF,RACF,ACEE securityServices
-    class CSA,ECSA,LPA storageServices
-    class PC,SRB,LXRES,ETCRE crossMemory
+    %% Styling
+    classDef taskMgmt fill:#e8f5e8,stroke:#2e7d32,stroke-width:6px,color:#000,font-size:24px,font-weight:bold
     class ATTACH,RESMGR,EXTRACT,QEDIT taskMgmt
+```
+
+#### 6. MXE Application Components Overview
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor': '#fff8e1', 'primaryTextColor': '#000', 'primaryBorderColor': '#f57f17', 'lineColor': '#333', 'nodeSpacing': 250, 'rankSpacing': 400 }}}%%
+graph TB
+    subgraph MXE["🎯 MXE APPLICATION ARCHITECTURE"]
+        direction TB
+        
+        MAIN["🏛️ MXESRVMN<br/>Main Server Task<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📍 MXE Address Space<br/>🔍 Server Orchestration Hub<br/>⚠️ CRITICAL - System Coordinator"]
+        
+        PCINTF["🌐 MXESRVPC<br/>PC Routine Interface<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📍 LPA Cross-Memory<br/>🔍 Client Service Gateway<br/>⚠️ CRITICAL - Primary Interface"]
+        
+        SRBPROC["⚡ MXESRBRQ<br/>SRB Request Handler<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📍 Target Address Space<br/>🔍 Async Processing Engine<br/>⚠️ HIGH - Data Collection"]
+        
+        LOGPROC["📝 MXESRVLD<br/>Log Data Processor<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📍 MXE Server Subtask<br/>🔍 Data Persistence Engine<br/>⚠️ MEDIUM - Queue Processing"]
+        
+        RESMGMT["🧹 MXESRVRM<br/>Resource Manager<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📍 MXE Server Context<br/>🔍 Cleanup Coordinator<br/>⚠️ HIGH - Lifecycle Management"]
+        
+        TIMER["⏰ MXETMRXR<br/>Timer Exit Routine<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📍 Timer Exit Context<br/>🔍 Time-Based Processor<br/>⚠️ MEDIUM - Event Coordination"]
+    end
+    
+    %% MXE component relationships
+    MAIN -->|"Orchestrates"| PCINTF
+    MAIN -->|"Controls"| SRBPROC
+    MAIN -->|"Manages"| LOGPROC
+    MAIN -->|"Coordinates"| RESMGMT
+    MAIN -->|"Schedules"| TIMER
+    
+    PCINTF -->|"Dispatches"| SRBPROC
+    SRBPROC -->|"Queues Data"| LOGPROC
+    
+    %% Styling
+    classDef mxeComponents fill:#fff8e1,stroke:#f57f17,stroke-width:8px,color:#000,font-size:28px,font-weight:bold
     class MAIN,PCINTF,SRBPROC,LOGPROC,RESMGMT,TIMER mxeComponents
 ```
+
+**Legend:**
+- 🔴 **Critical Path:** Essential system services that must be available
+- 🟡 **High Impact:** Important services affecting system performance
+- 🔵 **Medium Impact:** Supporting services for functionality
+- 🟢 **Low Impact:** Utility services with minimal system impact
+- 🎯 **Application Layer:** MXE-specific components and their relationships
 
 **Dependency Matrix (Fallback):**
 
