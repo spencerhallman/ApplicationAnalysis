@@ -249,45 +249,45 @@ graph TB
     end
     
     %% CRITICAL DEPENDENCIES - THICK LINES
-    MAIN ==>🏛️ SYSTEM ANCHOR<br/>System Parameters| CVT
-    MAIN ==>💾 HARDWARE ACCESS<br/>Low Storage Interface| PSA
-    MAIN ==>🌐 ADDRESS SPACES<br/>AS Discovery & Validation| ASVT
-    MAIN ==>🎯 AS CONTROL<br/>Security Boundaries| ASCB
-    MAIN ==>🏢 SHARED STORAGE<br/>Global Control Blocks| CSA
+    MAIN ==>|"🏛️ SYSTEM ANCHOR<br/>System Parameters"| CVT
+    MAIN ==>|"💾 HARDWARE ACCESS<br/>Low Storage Interface"| PSA
+    MAIN ==>|"🌐 ADDRESS SPACES<br/>AS Discovery & Validation"| ASVT
+    MAIN ==>|"🎯 AS CONTROL<br/>Security Boundaries"| ASCB
+    MAIN ==>|"🏢 SHARED STORAGE<br/>Global Control Blocks"| CSA
     
     %% HIGH DEPENDENCIES - MEDIUM LINES
-    MAIN -->🏗️ EXTENDED STORAGE<br/>Large Structures| ECSA
-    MAIN -->📚 MODULE LOADING<br/>LPA Components| LPA
-    MAIN -->🚀 TASK CREATION<br/>Subtask Management| ATTACH
-    MAIN -->🧹 RESOURCE CLEANUP<br/>Lifecycle Management| RESMGR
+    MAIN -->|"🏗️ EXTENDED STORAGE<br/>Large Structures"| ECSA
+    MAIN -->|"📚 MODULE LOADING<br/>LPA Components"| LPA
+    MAIN -->|"🚀 TASK CREATION<br/>Subtask Management"| ATTACH
+    MAIN -->|"🧹 RESOURCE CLEANUP<br/>Lifecycle Management"| RESMGR
     
     %% PC INTERFACE SECURITY DEPENDENCIES
-    PCINTF ==>🛡️ SECURITY FRAMEWORK<br/>Authorization Router| SAF
-    PCINTF ==>🗝️ ACCESS CONTROL<br/>Permission Validation| RACF
-    PCINTF ==>👤 USER CONTEXT<br/>Identity Verification| ACEE
-    PCINTF ==>🌉 CROSS-MEMORY<br/>Bridge Services| PC
+    PCINTF ==>|"🛡️ SECURITY FRAMEWORK<br/>Authorization Router"| SAF
+    PCINTF ==>|"🗝️ ACCESS CONTROL<br/>Permission Validation"| RACF
+    PCINTF ==>|"👤 USER CONTEXT<br/>Identity Verification"| ACEE
+    PCINTF ==>|"🌉 CROSS-MEMORY<br/>Bridge Services"| PC
     
     %% PC INTERFACE CROSS-MEMORY DEPENDENCIES
-    PCINTF -->⚡ ASYNC PROCESSING<br/>Work Dispatch| SRB
-    PCINTF -->🔗 LINKAGE INDEX<br/>Service Registration| LXRES
-    PCINTF -->📋 ENTRY TABLES<br/>Endpoint Management| ETCRE
+    PCINTF -->|"⚡ ASYNC PROCESSING<br/>Work Dispatch"| SRB
+    PCINTF -->|"🔗 LINKAGE INDEX<br/>Service Registration"| LXRES
+    PCINTF -->|"📋 ENTRY TABLES<br/>Endpoint Management"| ETCRE
     
     %% SRB PROCESSOR DEPENDENCIES
-    SRBPROC -->🎯 TARGET VALIDATION<br/>AS Authorization| ASCB
-    SRBPROC -->🏢 DATA ACCESS<br/>Shared Coordination| CSA
-    SRBPROC -->📊 RESULT QUEUING<br/>Response Handling| QEDIT
+    SRBPROC -->|"🎯 TARGET VALIDATION<br/>AS Authorization"| ASCB
+    SRBPROC -->|"🏢 DATA ACCESS<br/>Shared Coordination"| CSA
+    SRBPROC -->|"📊 RESULT QUEUING<br/>Response Handling"| QEDIT
     
     %% LOG PROCESSOR DEPENDENCIES
-    LOGPROC -->📊 QUEUE PROCESSING<br/>Data Flow Coordination| QEDIT
-    LOGPROC -->🏢 BUFFER MANAGEMENT<br/>Memory Coordination| CSA
+    LOGPROC -->|"📊 QUEUE PROCESSING<br/>Data Flow Coordination"| QEDIT
+    LOGPROC -->|"🏢 BUFFER MANAGEMENT<br/>Memory Coordination"| CSA
     
     %% RESOURCE MANAGER DEPENDENCIES
-    RESMGMT -->🧹 CLEANUP COORDINATION<br/>Resource Protection| RESMGR
-    RESMGMT -->🏢 SHARED RESOURCES<br/>Tracking & Management| CSA
+    RESMGMT -->|"🧹 CLEANUP COORDINATION<br/>Resource Protection"| RESMGR
+    RESMGMT -->|"🏢 SHARED RESOURCES<br/>Tracking & Management"| CSA
     
     %% TIMER HANDLER DEPENDENCIES
-    TIMER -->⏰ SYSTEM MONITORING<br/>Operational Data| EXTRACT
-    TIMER -->📊 EVENT QUEUING<br/>Timer Coordination| QEDIT
+    TIMER -->|"⏰ SYSTEM MONITORING<br/>Operational Data"| EXTRACT
+    TIMER -->|"📊 EVENT QUEUING<br/>Timer Coordination"| QEDIT
     
     %% ENHANCED LARGE-SCALE STYLING FOR MAXIMUM READABILITY
     classDef systemServices fill:#e3f2fd,stroke:#1565c0,stroke-width:8px,color:#000,font-size:36px,font-weight:bold
